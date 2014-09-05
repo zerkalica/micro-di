@@ -1,4 +1,4 @@
 micro-di
 ========
 
-Config-based dependency injection container, inspired by Symfony2 and Spring
+Config-based dependency injection container for node.js, inspired by Symfony2 (PHP) and Spring (Java)

@@ -1,0 +1,29 @@
+{
+  "name": "micro-di",
+  "version": "1.0.0",
+  "description": "Config-based dependency injection container for node.js, inspired by Symfony2 and Spring",
+  "main": "index.js",
+  "scripts": {
+    "test": "node_modules/.bin/mocha tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zerkalica/micro-di.git"
+  },
+  "keywords": [
+    "ioc",
+    "di",
+    "dependency",
+    "injection"
+  ],
+  "author": "Sergey Yuferev",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/zerkalica/micro-di/issues"
+  },
+  "homepage": "https://github.com/zerkalica/micro-di",
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.21.4"
+  }
+}
