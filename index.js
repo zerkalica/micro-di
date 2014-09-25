@@ -1,1 +1,1 @@
-module.exports = require('./lib/micro-di');
+module.exports = require('./lib/micro-di-registrator');
