@@ -26,5 +26,8 @@
     "chai": "^1.9.1",
     "mocha": "^1.21.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "merge": "^1.2.0",
+    "traverse": "^0.6.6"
+  }
 }
