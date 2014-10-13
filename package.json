@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "merge": "^1.2.0",
+    "regexp-string-mapper": "0.0.2",
     "traverse": "^0.6.6"
   }
 }
