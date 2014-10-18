@@ -1,7 +1,7 @@
 var expect = require('./test-helpers').expect;
 var HyperConfig = require('../lib/hyper-config');
 
-describe('HyperConfig', function () {
+describe('hyper-config', function () {
   var hc;
   var testTags = ['testTag1', 'testTag2'];
   var testConfig = [
