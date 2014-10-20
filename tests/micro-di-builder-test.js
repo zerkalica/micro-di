@@ -35,8 +35,7 @@ describe('micro-di-builder', function () {
   before(function () {
     di = Builder()
       .addConfig(testConfig)
-      .addModules(testServices)
-      .build();
+      .addModules(testServices);
     c = di.getContainer();
   });
 
