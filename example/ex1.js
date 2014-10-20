@@ -57,6 +57,6 @@ di.build();
 
 var c = di.getContainer();
 
-var b = c('my.a');
+var b = c.get('my.a');
 console.log(b.options);
 
