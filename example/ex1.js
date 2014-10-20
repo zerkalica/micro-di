@@ -53,8 +53,6 @@ di.addConfig({
   }
 });
 
-di.build();
-
 var c = di.getContainer();
 
 var b = c.get('my.a');
