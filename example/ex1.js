@@ -1,4 +1,4 @@
-var DI = require('../lib/micro-di-registrator');
+var DI = require('../');
 
 function A(options) {
   this.name = 'A';
@@ -53,8 +53,10 @@ di.addConfig({
   }
 });
 
+di.build();
 
-var c = di.build();
+var c = di.getContainer();
+
 var b = c('my.a');
 console.log(b.options);
 
