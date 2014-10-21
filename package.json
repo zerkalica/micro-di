@@ -16,7 +16,7 @@
     "dependency",
     "injection"
   ],
-  "author": "Sergey Yuferev",
+  "author": "Stefan Zerkalica <zerkalica@gmail.com>",
   "license": "GPLv3",
   "bugs": {
     "url": "https://github.com/zerkalica/micro-di/issues"
