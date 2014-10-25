@@ -14,6 +14,12 @@ describe('micro-di-builder', function () {
       'logger': {
         '@class': 'Logger',
         'transports': '@ul.transports'
+      },
+      'some': {
+        '@factory': 'Some',
+        '@inject': 'arguments',
+        'name': 'test',
+        'email': 'test@@email'
       }
     }
   };
@@ -29,6 +35,13 @@ describe('micro-di-builder', function () {
       file: function () {
 
       }
+    },
+    Some: function (email, name) {
+        var o = {};
+        o.name = name;
+        o.email = email;
+
+        return o;
     }
   };
 
@@ -49,6 +62,10 @@ describe('micro-di-builder', function () {
     it('should resolve refs and deps', function () {
       expect(c.get('ul.logger').options.transports[0])
         .to.be.instanceOf(testServices.Transports.console);
+    });
+    it('should inject deps as positional arguments', function () {
+      expect(c.get('ul.some').name).to.be.equal(testConfig.ul.some.name);
+      expect(c.get('ul.some').email).to.be.equal('test@email');
     });
   });
 });
