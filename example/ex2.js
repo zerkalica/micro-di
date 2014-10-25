@@ -1,30 +1,4 @@
-# Micro DI
-
-Config-based dependency injection container for node.js, inspired by Symfony2 (PHP) and Spring (Java).
-
-## Usage
-
-``` yaml
-# ./config/ex2.all.yml
-app:
-    console-transport:
-        @class: App.Transport.Console
-        @tags: [req]
-        prefix: console-prefix
-    logger:
-        @class: App.Logger
-        helper:
-            @factory: App.Helper
-            @inject: arguments
-            text: 'helper text'
-            value: 'helper value'
-        transports:
-            console: @app.console-transport
-        prefix: logger-prefix
-```
-
-``` javascript
-var MicroDi = require('micro-di');
+var MicroDi = require('../');
 
 function ConsoleTransport(options) {
     this._prefix = options.prefix;
@@ -81,4 +55,3 @@ container.getByTag('req').forEach(function (service) {
 var logger = container.get('app.logger');
 logger.log('message');
 //console-prefix, test query: logger-prefix: message, helper: helper value, helper text
-```
