@@ -5,15 +5,23 @@ describe('micro-di-builder', function () {
   var di, c;
   var testConfig = {
     'ul': {
-      'transports': [
-        {
+      'transports': {
+        't': {
           '@class': 'Transports.console',
           'par': 'p1'
         }
-      ],
+      },
       'logger': {
         '@class': 'Logger',
-        'transports': '@ul.transports'
+        'transports': '@ul.transports',
+        '@tags': ['t1']
+      },
+      'some': {
+        '@factory': 'Some',
+        '@inject': 'arguments',
+        'name': 'test',
+        'email': 'test@@email',
+        '@tags': ['t1', 't2']
       }
     }
   };
@@ -29,6 +37,13 @@ describe('micro-di-builder', function () {
       file: function () {
 
       }
+    },
+    Some: function (email, name) {
+        var o = {};
+        o.name = name;
+        o.email = email;
+
+        return o;
     }
   };
 
@@ -46,9 +61,23 @@ describe('micro-di-builder', function () {
         .and.to.have.property('options');
     });
 
+    it('should return reference', function () {
+      expect(c.get('ul.logger.transports.t'))
+        .to.be.equal(c.get('ul.transports.t'));
+    });
+
+    it('should load by tag', function () {
+      expect(c.getByTag('t2')[0])
+        .to.be.equal(c.get('ul.some'));
+    });
+
     it('should resolve refs and deps', function () {
-      expect(c.get('ul.logger').options.transports[0])
+      expect(c.get('ul.logger').options.transports.t)
         .to.be.instanceOf(testServices.Transports.console);
+    });
+    it('should inject deps as positional arguments', function () {
+      expect(c.get('ul.some').name).to.be.equal(testConfig.ul.some.name);
+      expect(c.get('ul.some').email).to.be.equal('test@email');
     });
   });
 });
