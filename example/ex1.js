@@ -19,7 +19,7 @@ function S(msg) {
 }
 
 
-di.addModules({
+di.addConfig({
   A: A,
   B: B,
   S: S
@@ -30,22 +30,22 @@ di.addConfig({
     "configData": {
       "key1": "val1",
       "static": {
-        '@static': 'S'
+        '@static': '@S'
       }
     },
     "a": {
-      "@class": "A",
+      "@class": "@A",
       "test": "test1",
       "data": "@my.configData"
     },
     "b": {
-      "@factory": "B",
+      "@factory": "@B",
       "a": "@my.a",
       "c": {
         "d": ["1", 2]
       },
       "f": {
-        "@class": "A",
+        "@class": "@A",
         "test": "test3"
       },
       "test": "test2"

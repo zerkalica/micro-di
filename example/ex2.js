@@ -1,4 +1,5 @@
 var MicroDi = require('../');
+var ConfigLoader = require('node-config-loader');
 
 function ConsoleTransport(options) {
     this._prefix = options.prefix;
@@ -39,10 +40,17 @@ var modules = {
     }
 };
 
-var container = MicroDi({env: 'dev'})
-    .addConfigPath(__dirname + '/config')
-    .addModules(modules)
-    .getContainer();
+
+var builder = MicroDi({env: 'dev'})
+    .addConfig(modules);
+
+ConfigLoader({env: 'dev'})
+	.addConfigPath(__dirname + '/config')
+	.load(function (config) {
+		builder.addConfig(config);
+	});
+
+var container = builder.getContainer();
 
 var req = {
     query: 'test query'

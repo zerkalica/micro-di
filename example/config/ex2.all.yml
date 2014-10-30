@@ -1,12 +1,12 @@
 app:
     console-transport:
-        @class: App.Transport.Console
+        @class: @App.Transport.Console
         @tags: [req]
         prefix: console-prefix
     logger:
-        @class: App.Logger
+        @class: @App.Logger
         helper:
-            @factory: App.Helper
+            @factory: @App.Helper
             @inject: arguments
             text: 'helper text'
             value: 'helper value'

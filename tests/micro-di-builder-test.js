@@ -7,17 +7,17 @@ describe('micro-di-builder', function () {
     'ul': {
       'transports': {
         't': {
-          '@class': 'Transports.console',
+          '@class': '@Transports.console',
           'par': 'p1'
         }
       },
       'logger': {
-        '@class': 'Logger',
+        '@class': '@Logger',
         'transports': '@ul.transports',
         '@tags': ['t1']
       },
       'some': {
-        '@factory': 'Some',
+        '@factory': '@Some',
         '@inject': 'arguments',
         'name': 'test',
         'email': 'test@@email',
@@ -47,10 +47,25 @@ describe('micro-di-builder', function () {
     }
   };
 
+  function Module(message) {
+    return function MyFunc(par) {
+      return message + '-' + par + '-par';
+    };
+  }
+
+  Module['@definition'] = {
+    'my.testNs.module': {
+      '@factory': Module,
+      '@inject': 'arguments',
+      message: 'test-module-message'
+    }
+  };
+
   before(function () {
     di = Builder()
-      .addConfig(testConfig)
-      .addModules(testServices);
+      .addConfig(testServices)
+      .addConfig(Module['@definition'])
+      .addConfig(testConfig);
     c = di.getContainer();
   });
 
@@ -59,6 +74,10 @@ describe('micro-di-builder', function () {
       expect(c.get('ul.logger'))
         .to.be.instanceOf(testServices.Logger)
         .and.to.have.property('options');
+    });
+
+    it('should return valid service injected thru definition', function () {
+      expect(c.get('my.testNs.module')('vvv')).to.be.equal('test-module-message-vvv-par');
     });
 
     it('should return reference', function () {

@@ -8,13 +8,13 @@ Config-based dependency injection container for node.js, inspired by Symfony2 (P
 # ./config/ex2.all.yml
 app:
     console-transport:
-        @class: App.Transport.Console
+        @class: @App.Transport.Console
         @tags: [req]
         prefix: console-prefix
     logger:
-        @class: App.Logger
+        @class: @App.Logger
         helper:
-            @factory: App.Helper
+            @factory: @App.Helper
             @inject: arguments
             text: 'helper text'
             value: 'helper value'
@@ -74,7 +74,7 @@ ConfigLoader({env: 'dev', project: 'app1'})
         microDi.addConfig(config);
     });
 
-microDi.addModules(modules);
+microDi.addConfig(modules);
 
 var container = microDi.getContainer();
 
