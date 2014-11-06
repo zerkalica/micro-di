@@ -2,7 +2,6 @@ var expect = require('./test-helpers').expect;
 var Builder = require('../lib/micro-di-builder');
 
 describe('micro-di-builder', function () {
-  var di, c;
   var testConfig = {
     'ul': {
       'transports': {
@@ -19,6 +18,7 @@ describe('micro-di-builder', function () {
       'some': {
         '@factory': '@Some',
         '@inject': 'arguments',
+        '@scope': 'req',
         'name': 'test',
         'email': 'test@@email',
         '@tags': ['t1', 't2']
@@ -57,19 +57,20 @@ describe('micro-di-builder', function () {
     'my.testNs.module': {
       '@factory': Module,
       '@inject': 'arguments',
-      message: 'test-module-message'
+      'message': 'test-module-message'
     }
   };
 
-  before(function () {
-    di = Builder()
-      .addConfig(testServices)
-      .addConfig(Module['@definition'])
-      .addConfig(testConfig);
-    c = di.getContainer();
-  });
-
   describe('#getContainer.get', function () {
+    var di, c;
+    beforeEach(function () {
+      di = Builder()
+        .addConfig(testServices)
+        .addConfig(Module['@definition'])
+        .addConfig(testConfig);
+      c = di.getContainer();
+    });
+
     it('should return valid service', function () {
       expect(c.get('ul.logger'))
         .to.be.instanceOf(testServices.Logger)
@@ -97,6 +98,122 @@ describe('micro-di-builder', function () {
     it('should inject deps as positional arguments', function () {
       expect(c.get('ul.some').name).to.be.equal(testConfig.ul.some.name);
       expect(c.get('ul.some').email).to.be.equal('test@email');
+    });
+
+    describe('scopes', function () {
+      it('should throw CantAccessScope if injects from depend scope', function () {
+        var di = Builder({
+          scopeDefs: {
+            'default': {deps: null, tags: []},
+            'req': {deps: 'default', tags: ['req', 'res']}
+          }
+        })
+          .addConfig(testServices)
+          .addConfig({
+            's1': {
+              '@class': '@Logger',
+              '@scope': 'default',
+              'dep': '@s2'
+            },
+            's2': {
+              '@class': '@Transports.file',
+              '@scope': 'req'
+            },
+          });
+        expect(di.getContainer.bind(di)).to.throw(Builder.Exceptions.CantAccessScope);
+      });
+
+      it('should resolve scope from tags', function () {
+        var di = Builder({
+          scopeDefs: {
+            'default': {deps: null, tags: []},
+            'req': {deps: 'default', tags: ['req', 'res']}
+          }
+        })
+          .addConfig(testServices)
+          .addConfig({
+            's1': {
+              '@class': '@Logger',
+              '@scope': 'default',
+              'dep': '@s2'
+            },
+            's2': {
+              '@class': '@Transports.file',
+              '@tags': ['res']
+            },
+          });
+        expect(di.getContainer.bind(di)).to.throw(Builder.Exceptions.CantAccessScope);
+      });
+
+      it('should not throw CantAccessScope if injects to depend scope', function () {
+        var di = Builder({
+          scopeDefs: {
+            'default': {deps: null, tags: []},
+            'req': {deps: 'default', tags: ['req', 'res']}
+          }
+        })
+          .addConfig(testServices)
+          .addConfig({
+            's1': {
+              '@class': '@Logger',
+              '@scope': 'req',
+              'dep': '@s2'
+            },
+            's2': {
+              '@class': '@Transports.file',
+              '@scope': 'default'
+            },
+          });
+        expect(di.getContainer.bind(di)).not.to.throw();
+      });
+
+      it('should throw ScopeNotRegistered if not registered scope', function () {
+        var di = Builder({
+          scopeDefs: {
+            'default': {deps: null, tags: []},
+            'req': {deps: 'default', tags: ['req', 'res']}
+          }
+        })
+          .addConfig(testServices)
+          .addConfig({
+            's1': {
+              '@class': '@Logger',
+              '@scope': 'test',
+              'dep': '@s2'
+            },
+            's2': {
+              '@class': '@Transports.file',
+              '@scope': 'default'
+            },
+          });
+        expect(di.getContainer.bind(di)).to.throw(Builder.Exceptions.ScopeNotRegistered);
+      });
+
+      it('should inherit instances from parent container', function () {
+        var di = Builder({
+          scopeDefs: {
+            'default': {deps: null, tags: []},
+            'req': {deps: 'default', tags: ['req', 'res']}
+          }
+        })
+          .addConfig(testServices)
+          .addConfig({
+            's1': {
+              '@class': '@Logger',
+              '@scope': 'req',
+              'dep': '@s2'
+            },
+            's2': {
+              '@class': '@Transports.file',
+              '@scope': 'default'
+            },
+          });
+        var c1 = di.getContainer();
+        var c2 = di.getContainer(c1, 'default');
+        var c3 = di.getContainer();
+        expect(c1.get('s2')).to.equal(c2.get('s2'));
+        expect(c1.get('s2')).not.to.equal(c3.get('s2'));
+      });
     });
   });
 });
