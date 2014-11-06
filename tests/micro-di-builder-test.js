@@ -209,7 +209,7 @@ describe('micro-di-builder', function () {
             },
           });
         var c1 = di.getContainer();
-        var c2 = di.getContainer(c1, 'default');
+        var c2 = c1.get('MicroDi.cloneContainer')('default');
         var c3 = di.getContainer();
         expect(c1.get('s2')).to.equal(c2.get('s2'));
         expect(c1.get('s2')).not.to.equal(c3.get('s2'));
