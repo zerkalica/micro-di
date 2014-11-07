@@ -68,7 +68,7 @@ describe('micro-di-builder', function () {
         .addConfig(testServices)
         .addConfig(Module['@definition'])
         .addConfig(testConfig);
-      c = di.getContainer();
+      c = di.getContainer({default: {}, req: {}});
     });
 
     it('should return valid service', function () {
@@ -209,9 +209,9 @@ describe('micro-di-builder', function () {
             },
           });
         var c1 = di.getContainer();
-        var c2 = c1.get('microdi.clone')('default');
+        var c2s2 = c1.clone({req: {}}).get('s2');
         var c3 = di.getContainer();
-        expect(c1.get('s2')).to.equal(c2.get('s2'));
+        expect(c1.get('s2')).to.equal(c2s2);
         expect(c1.get('s2')).not.to.equal(c3.get('s2'));
       });
     });
