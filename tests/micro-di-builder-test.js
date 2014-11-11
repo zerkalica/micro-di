@@ -15,13 +15,19 @@ describe('micro-di-builder', function () {
         'transports': '@ul.transports',
         '@tags': ['t1']
       },
+      'some-2': {
+        '@factory': '@Some',
+        '@inject': 'arguments',
+        'name': 'test',
+        'email': 'test@@email',
+        '@tags': ['t1', 't2']
+      },
       'some': {
         '@factory': '@Some',
         '@inject': 'arguments',
         '@scope': 'req',
         'name': 'test',
-        'email': 'test@@email',
-        '@tags': ['t1', 't2']
+        'email': 'test@@email'
       }
     }
   };
@@ -68,7 +74,7 @@ describe('micro-di-builder', function () {
         .addConfig(testServices)
         .addConfig(Module['@definition'])
         .addConfig(testConfig);
-      c = di.getContainer({default: {}, req: {}});
+      c = di.getContainer({process: {}, req: {}});
     });
 
     it('should return valid service', function () {
@@ -88,7 +94,7 @@ describe('micro-di-builder', function () {
 
     it('should load by tag', function () {
       expect(c.getByTag('t2')[0])
-        .to.be.equal(c.get('ul.some'));
+        .to.be.equal(c.get('ul.some-2'));
     });
 
     it('should resolve refs and deps', function () {
@@ -96,23 +102,23 @@ describe('micro-di-builder', function () {
         .to.be.instanceOf(testServices.Transports.console);
     });
     it('should inject deps as positional arguments', function () {
-      expect(c.get('ul.some').name).to.be.equal(testConfig.ul.some.name);
-      expect(c.get('ul.some').email).to.be.equal('test@email');
+      expect(c.get('ul.some-2').name).to.be.equal(testConfig.ul.some.name);
+      expect(c.get('ul.some-2').email).to.be.equal('test@email');
     });
 
     describe('scopes', function () {
       it('should throw CantAccessScope if injects from depend scope', function () {
         var di = Builder({
           scopeDefs: {
-            'default': {deps: null, tags: []},
-            'req': {deps: 'default', tags: ['req', 'res']}
+            'process': {deps: null, tags: []},
+            'req': {deps: 'process', tags: ['req', 'res']}
           }
         })
           .addConfig(testServices)
           .addConfig({
             's1': {
               '@class': '@Logger',
-              '@scope': 'default',
+              '@scope': 'process',
               'dep': '@s2'
             },
             's2': {
@@ -126,15 +132,15 @@ describe('micro-di-builder', function () {
       it('should resolve scope from tags', function () {
         var di = Builder({
           scopeDefs: {
-            'default': {deps: null, tags: []},
-            'req': {deps: 'default', tags: ['req', 'res']}
+            'process': {deps: null, tags: []},
+            'req': {deps: 'process', tags: ['req', 'res']}
           }
         })
           .addConfig(testServices)
           .addConfig({
             's1': {
               '@class': '@Logger',
-              '@scope': 'default',
+              '@scope': 'process',
               'dep': '@s2'
             },
             's2': {
@@ -148,8 +154,8 @@ describe('micro-di-builder', function () {
       it('should not throw CantAccessScope if injects to depend scope', function () {
         var di = Builder({
           scopeDefs: {
-            'default': {deps: null, tags: []},
-            'req': {deps: 'default', tags: ['req', 'res']}
+            'process': {deps: null, tags: []},
+            'req': {deps: 'process', tags: ['req', 'res']}
           }
         })
           .addConfig(testServices)
@@ -161,7 +167,7 @@ describe('micro-di-builder', function () {
             },
             's2': {
               '@class': '@Transports.file',
-              '@scope': 'default'
+              '@scope': 'process'
             },
           });
         expect(di.getContainer.bind(di)).not.to.throw();
@@ -170,8 +176,8 @@ describe('micro-di-builder', function () {
       it('should throw ScopeNotRegistered if not registered scope', function () {
         var di = Builder({
           scopeDefs: {
-            'default': {deps: null, tags: []},
-            'req': {deps: 'default', tags: ['req', 'res']}
+            'process': {deps: null, tags: []},
+            'req': {deps: 'process', tags: ['req', 'res']}
           }
         })
           .addConfig(testServices)
@@ -183,7 +189,7 @@ describe('micro-di-builder', function () {
             },
             's2': {
               '@class': '@Transports.file',
-              '@scope': 'default'
+              '@scope': 'process'
             },
           });
         expect(di.getContainer.bind(di)).to.throw(Builder.Exceptions.ScopeNotRegistered);
@@ -192,8 +198,8 @@ describe('micro-di-builder', function () {
       it('should inherit instances from parent container', function () {
         var di = Builder({
           scopeDefs: {
-            'default': {deps: null, tags: []},
-            'req': {deps: 'default', tags: ['req', 'res']}
+            'process': {deps: null, tags: []},
+            'req': {deps: 'process', tags: ['req', 'res']}
           }
         })
           .addConfig(testServices)
@@ -205,11 +211,11 @@ describe('micro-di-builder', function () {
             },
             's2': {
               '@class': '@Transports.file',
-              '@scope': 'default'
+              '@scope': 'process'
             },
           });
         var c1 = di.getContainer();
-        var c2s2 = c1.clone({req: {}}).get('s2');
+        var c2s2 = c1.setContext('req', {req: {test: 1}}).get('s2');
         var c3 = di.getContainer();
         expect(c1.get('s2')).to.equal(c2s2);
         expect(c1.get('s2')).not.to.equal(c3.get('s2'));
