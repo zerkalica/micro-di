@@ -10,11 +10,11 @@ Config-based dependency injection container for node.js, inspired by Symfony2 (P
 * can clone di container with new context (container per requests)
 
 ## Config keywords
-    @class - reference to class, container creates new instance of prototype
-    @factory - reference to factory function, which returns initialized object, container invoke this function and cache result
-    ~path - reference, see [hyper-config](https://github.com/zerkalica/hyper-config)
-    @inject - constructor injection type: object, arguments, props
-    @tags - array of tags, see [hyper-config](https://github.com/zerkalica/hyper-config)
+* @class - reference to class, container creates new instance of prototype
+* @factory - reference to factory function, which returns initialized object, container invoke this function and cache result
+* ~path - reference, see [hyper-config](https://github.com/zerkalica/hyper-config)
+* @inject - constructor injection type: object, arguments, props
+* @tags - array of tags, see [hyper-config](https://github.com/zerkalica/hyper-config)
 
 ## Usage
 
