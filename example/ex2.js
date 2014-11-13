@@ -41,7 +41,7 @@ var modules = {
 };
 
 
-var builder = MicroDi({env: 'dev'})
+var builder = MicroDi()
     .addConfig(modules);
 
 ConfigLoader({env: 'dev'})
@@ -55,11 +55,10 @@ var container = builder.getContainer();
 var req = {
     query: 'test query'
 };
-
-container.getByTag('req').forEach(function (service) {
-    service.setReq(req);
+var newContainer = container.setContext('req', {
+    req: req
 });
 
-var logger = container.get('app.logger');
+var logger = newContainer.get('app.logger');
 logger.log('message');
 //console-prefix, test query: logger-prefix: message, helper: helper value, helper text

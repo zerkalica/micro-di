@@ -2,28 +2,43 @@
 
 Config-based dependency injection container for node.js, inspired by Symfony2 (PHP) and Spring (Java).
 
+## Features
+
+* based on [hyper-config](https://github.com/zerkalica/hyper-config): config wrapper with merging, references, string macros, tagging, etc.
+* supports annotation
+* injects to constructor as options object or arguments
+* can clone di container with new context (container per requests)
+
+## Config keywords
+    @class - reference to class, container creates new instance of prototype
+    @factory - reference to factory function, which returns initialized object, container invoke this function and cache result
+    ~path - reference, see [hyper-config](https://github.com/zerkalica/hyper-config)
+    @inject - constructor injection type: object, arguments, props
+    @tags - array of tags, see [hyper-config](https://github.com/zerkalica/hyper-config)
+
 ## Usage
 
-``` yaml
+```yaml
 # ./config/ex2.all.yml
 app:
     console-transport:
-        @class: @App.Transport.Console
+        @class: ~App.Transport.Console
         @tags: [req]
         prefix: console-prefix
     logger:
-        @class: @App.Logger
+        @class: ~App.Logger
+        @scope: req
         helper:
-            @factory: @App.Helper
+            @factory: ~App.Helper
             @inject: arguments
-            text: 'helper text'
-            value: 'helper value'
+            text: helper text
+            value: helper value
         transports:
-            console: @app.console-transport
+            console: ~app.console-transport
         prefix: logger-prefix
 ```
 
-``` javascript
+```javascript
 var MicroDi = require('micro-di');
 var ConfigLoader = require('node-config-loader');
 
@@ -66,27 +81,26 @@ var modules = {
     }
 };
 
-var microDi = MicroDi();
 
-ConfigLoader({env: 'dev', project: 'app1'})
+var builder = MicroDi()
+    .addConfig(modules);
+
+ConfigLoader({env: 'dev'})
     .addConfigPath(__dirname + '/config')
     .load(function (config) {
-        microDi.addConfig(config);
+        builder.addConfig(config);
     });
 
-microDi.addConfig(modules);
-
-var container = microDi.getContainer();
+var container = builder.getContainer();
 
 var req = {
     query: 'test query'
 };
-
-container.getByTag('req').forEach(function (service) {
-    service.setReq(req);
+var newContainer = container.setContext('req', {
+    req: req
 });
 
-var logger = container.get('app.logger');
+var logger = newContainer.get('app.logger');
 logger.log('message');
 //console-prefix, test query: logger-prefix: message, helper: helper value, helper text
 ```

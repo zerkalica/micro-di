@@ -6,28 +6,28 @@ describe('micro-di-builder', function () {
     'ul': {
       'transports': {
         't': {
-          '@class': '@Transports.console',
+          '@class': '~Transports.console',
           'par': 'p1'
         }
       },
       'logger': {
-        '@class': '@Logger',
-        'transports': '@ul.transports',
+        '@class': '~Logger',
+        'transports': '~ul.transports',
         '@tags': ['t1']
       },
       'some-2': {
-        '@factory': '@Some',
+        '@factory': '~Some',
         '@inject': 'arguments',
         'name': 'test',
-        'email': 'test@@email',
+        'email': 'test~~email',
         '@tags': ['t1', 't2']
       },
       'some': {
-        '@factory': '@Some',
+        '@factory': '~Some',
         '@inject': 'arguments',
         '@scope': 'req',
         'name': 'test',
-        'email': 'test@@email'
+        'email': 'test~~email'
       }
     }
   };
@@ -59,7 +59,7 @@ describe('micro-di-builder', function () {
     };
   }
 
-  Module['@definition'] = {
+  Module['~definition'] = {
     'my.testNs.module': {
       '@factory': Module,
       '@inject': 'arguments',
@@ -72,7 +72,7 @@ describe('micro-di-builder', function () {
     beforeEach(function () {
       di = Builder()
         .addConfig(testServices)
-        .addConfig(Module['@definition'])
+        .addConfig(Module['~definition'])
         .addConfig(testConfig);
       c = di.getContainer({process: {}, req: {}});
     });
@@ -103,7 +103,7 @@ describe('micro-di-builder', function () {
     });
     it('should inject deps as positional arguments', function () {
       expect(c.get('ul.some-2').name).to.be.equal(testConfig.ul.some.name);
-      expect(c.get('ul.some-2').email).to.be.equal('test@email');
+      expect(c.get('ul.some-2').email).to.be.equal('test~email');
     });
 
     describe('scopes', function () {
@@ -117,12 +117,12 @@ describe('micro-di-builder', function () {
           .addConfig(testServices)
           .addConfig({
             's1': {
-              '@class': '@Logger',
+              '@class': '~Logger',
               '@scope': 'process',
-              'dep': '@s2'
+              'dep': '~s2'
             },
             's2': {
-              '@class': '@Transports.file',
+              '@class': '~Transports.file',
               '@scope': 'req'
             },
           });
@@ -139,12 +139,12 @@ describe('micro-di-builder', function () {
           .addConfig(testServices)
           .addConfig({
             's1': {
-              '@class': '@Logger',
+              '@class': '~Logger',
               '@scope': 'process',
-              'dep': '@s2'
+              'dep': '~s2'
             },
             's2': {
-              '@class': '@Transports.file',
+              '@class': '~Transports.file',
               '@tags': ['res']
             },
           });
@@ -161,12 +161,12 @@ describe('micro-di-builder', function () {
           .addConfig(testServices)
           .addConfig({
             's1': {
-              '@class': '@Logger',
+              '@class': '~Logger',
               '@scope': 'req',
-              'dep': '@s2'
+              'dep': '~s2'
             },
             's2': {
-              '@class': '@Transports.file',
+              '@class': '~Transports.file',
               '@scope': 'process'
             },
           });
@@ -183,12 +183,12 @@ describe('micro-di-builder', function () {
           .addConfig(testServices)
           .addConfig({
             's1': {
-              '@class': '@Logger',
+              '@class': '~Logger',
               '@scope': 'test',
-              'dep': '@s2'
+              'dep': '~s2'
             },
             's2': {
-              '@class': '@Transports.file',
+              '@class': '~Transports.file',
               '@scope': 'process'
             },
           });
@@ -205,12 +205,12 @@ describe('micro-di-builder', function () {
           .addConfig(testServices)
           .addConfig({
             's1': {
-              '@class': '@Logger',
+              '@class': '~Logger',
               '@scope': 'req',
-              'dep': '@s2'
+              'dep': '~s2'
             },
             's2': {
-              '@class': '@Transports.file',
+              '@class': '~Transports.file',
               '@scope': 'process'
             },
           });
