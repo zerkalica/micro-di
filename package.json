@@ -1,6 +1,6 @@
 {
   "name": "micro-di",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "description": "Config-based dependency injection container for node.js, inspired by Symfony2 (PHP) and Spring (Java)",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "define-exceptions": "^1.0.6",
-    "hyper-config": "^0.1.19",
+    "hyper-config": "^0.1.20",
     "traverse": "^0.6.6"
   }
 }
